@@ -25,8 +25,12 @@ class Jobs:
         except:
             logging.critical("Failed to list nomad jobs")
             raise
-
-        return jobs
+        non_periodic_jobs = []
+        # Don't save periodic jobs
+        for job in jobs:
+            if job.get('ParentID') == "":
+                non_periodic_jobs.append(job)
+        return non_periodic_jobs
 
     def __extract_job_names(self, jobs):
         job_names = [ job['Name'] for job in jobs ]
