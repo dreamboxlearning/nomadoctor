@@ -1,4 +1,4 @@
-FROM python:3-slim
+FROM python:3.7.4-slim
 LABEL maintainer=dj@glympse.com
 
 ENV APP_DIR=/opt/nomadoctor/

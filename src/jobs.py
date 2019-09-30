@@ -56,21 +56,17 @@ class Jobs:
             for job_def in job_definitions:
                 print(job_def)
         else:
-            # create file
-            ### change to /tmp/nomadoctor_backup when done iterating
+            # create file and write backup contents
             f = open('nomadoctor_backup', 'w')
             for job_def in job_definitions:
                 f.write(job_def+"\n")
             f.close()
+            # split up the backup_to_s3 ARN into bucket and key
             s3_location = backup_to_s3[5:]
             s3_location = s3_location.split('/', 1)
             s3 = boto3.client('s3')
             s3.upload_file('./nomadoctor_backup', s3_location[0], s3_location[1])
-            # split up the backup_to_s3 ARN into bucket and key
-            #
-            #boto3.resource('s3').Object('brian-test-dbl-stage', '/blah/stuff/nomadoctor_backup').put(Body=./nomadoctor_backup)
              
-
     def backup_jobs(self, backup_to_s3):
         # fetch all jobs
         jobs = self.__list_jobs()
@@ -108,7 +104,6 @@ class Jobs:
 
         data = json.loads(job_def)
         job_def = { 'Job': data }
-        
 
         request_url = f'{self._endpoint}{self.JOBS_URI}'
         try:
