@@ -90,6 +90,7 @@ class Jobs:
                 for job in job_definitions:
                     self.__deploy_job(job)
             job_definitions.close()
+            os.remove('nomadoctor_backup')
         else:
             with open(f'./{jobs_file}', 'r') as job_definitions:
                 for job in job_definitions:
