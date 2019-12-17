@@ -7,19 +7,25 @@ from src import logger
 
 @click.command()
 @click.option('--backup', is_flag=True, default=False, help='Performs a jobs backup - Default mode')
-@click.option('--restore', help='Performs a restore')
+@click.option('--backup_to_s3', help='S3 location to upload the backup to. Bucket must already exist.')
+@click.option('--restore', help='Performs a restore. Specify local backup or the ARN of a backup in S3.')
 @click.option('--token', help='ACL token')
 @click.argument('endpoint')
-def nomadoctor(backup, restore, token, endpoint):
+
+def nomadoctor(backup, restore, token, endpoint, backup_to_s3):
     job_handler = jobs.Jobs(endpoint, token)
     if (backup is True and restore is not None) or (backup is False and restore is None):
         logging.error("Must chose '--backup' or '--restore'")
     elif restore is None:
-        logging.info("Performing backup")
-        job_handler.backup_jobs()
+        if backup_to_s3 is None:
+            logging.info("Performing backup locally...")
+        else:
+            logging.info("Performing backup to S3 location [{}]...".format(backup_to_s3))
+        job_handler.backup_jobs(backup_to_s3)
     else:
         logging.info("Performing restore")
         job_handler.restore_jobs(restore)
+
 
 if __name__ == '__main__':
     try:
